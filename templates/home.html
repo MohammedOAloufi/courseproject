@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>PC Gamer Store</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      color: #111827;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #0f0f0f, #1f2933);
+      color: white;
+      padding: 80px 40px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #d1d5db;
+    }
+
+    .products {
+      padding: 60px 40px;
+    }
+
+    .products h2 {
+      margin-bottom: 25px;
+      color: #7c3aed;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+      margin-bottom: 8px;
+    }
+
+    .card span {
+      color: #7c3aed;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <div id="header"></div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>أفضل قطع PC وأجهزة الألعاب</h1>
+    <p>PlayStation • Xbox • Gaming PC • Accessories</p>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="products">
+    <h2>منتجات مميزة</h2>
+
+    <div class="product-grid">
+      <div class="card">
+        <h3>RTX 4070</h3>
+        <span>3299 ر.س</span>
+      </div>
+
+      <div class="card">
+        <h3>PlayStation 5</h3>
+        <span>2299 ر.س</span>
+      </div>
+
+      <div class="card">
+        <h3>Xbox Series X</h3>
+        <span>2199 ر.س</span>
+      </div>
+
+      <div class="card">
+        <h3>Ryzen 7 7800X3D</h3>
+        <span>1899 ر.س</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div id="footer"></div>
+
+  <script>
+    fetch("header.html")
+      .then(res => res.text())
+      .then(data => document.getElementById("header").innerHTML = data);
+
+    fetch("footer.html")
+      .then(res => res.text())
+      .then(data => document.getElementById("footer").innerHTML = data);
+  </script>
+
+</body>
+</html>

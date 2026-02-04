@@ -1,17 +1,23 @@
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    # لوحة التحكم
     path("admin/", admin.site.urls),
 
-    # Apps URLs
+    # الواجهة الرئيسية للعملاء (Home)
+    path("", include("catalog.urls")),
+
+    # تطبيقات أخرى
     path("accounts/", include("accounts.urls")),
-    path("catalog/", include("catalog.urls")),
     path("orders/", include("orders.urls")),
 ]
 
-# Serve media files during development only
+# عرض ملفات الميديا أثناء التطوير فقط
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        document_root=settings.MEDIA_ROOT
+    )
