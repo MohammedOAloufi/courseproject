@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -12,6 +13,7 @@
       color: #111827;
     }
 
+    /* HERO */
     .hero {
       background: linear-gradient(135deg, #0f0f0f, #1f2933);
       color: white;
@@ -29,6 +31,7 @@
       color: #d1d5db;
     }
 
+    /* PRODUCTS */
     .products {
       padding: 60px 40px;
     }
@@ -40,24 +43,58 @@
 
     .product-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
       gap: 25px;
     }
 
     .card {
       background: white;
-      border-radius: 10px;
+      border-radius: 14px;
       padding: 20px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.12);
     }
 
     .card h3 {
       margin-bottom: 8px;
+      font-size: 18px;
     }
 
-    .card span {
+    .price {
       color: #7c3aed;
       font-weight: bold;
+      font-size: 16px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .status {
+      color: #16a34a;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .add-btn {
+      width: 100%;
+      background: #7c3aed;
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s ease;
+    }
+
+    .add-btn:hover {
+      background: #5b21b6;
     }
   </style>
 </head>
@@ -65,7 +102,7 @@
 <body>
 
   <!-- HEADER -->
-  <div id="header"></div>
+  {% include "header.html" %}
 
   <!-- HERO -->
   <section class="hero">
@@ -78,40 +115,54 @@
     <h2>منتجات مميزة</h2>
 
     <div class="product-grid">
+
+      <div class="card">
+        <h3>RTX 4090</h3>
+        <span class="price">6899 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
+      </div>
+
       <div class="card">
         <h3>RTX 4070</h3>
-        <span>3299 ر.س</span>
-      </div>
-
-      <div class="card">
-        <h3>PlayStation 5</h3>
-        <span>2299 ر.س</span>
-      </div>
-
-      <div class="card">
-        <h3>Xbox Series X</h3>
-        <span>2199 ر.س</span>
+        <span class="price">3299 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
       </div>
 
       <div class="card">
         <h3>Ryzen 7 7800X3D</h3>
-        <span>1899 ر.س</span>
+        <span class="price">1899 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
       </div>
+
+      <div class="card">
+        <h3>Intel Core i9-14900K</h3>
+        <span class="price">2399 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
+      </div>
+
+      <div class="card">
+        <h3>PlayStation 5</h3>
+        <span class="price">2299 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
+      </div>
+
+      <div class="card">
+        <h3>Xbox Series X</h3>
+        <span class="price">2199 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
+      </div>
+
     </div>
   </section>
 
   <!-- FOOTER -->
-  <div id="footer"></div>
-
-  <script>
-    fetch("header.html")
-      .then(res => res.text())
-      .then(data => document.getElementById("header").innerHTML = data);
-
-    fetch("footer.html")
-      .then(res => res.text())
-      .then(data => document.getElementById("footer").innerHTML = data);
-  </script>
+  {% include "footer.html" %}
 
 </body>
 </html>
