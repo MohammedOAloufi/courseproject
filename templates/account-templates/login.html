@@ -2,32 +2,171 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>تسجيل الدخول</title>
+    <title>تسجيل الدخول | GameZone</title>
+
+    <style>
+        :root {
+            --bg-dark: #0b0f1a;
+            --card-bg: #0f172a;
+            --primary: #7c3aed;
+            --primary-hover: #5b21b6;
+            --text-light: #e5e7eb;
+            --text-muted: #9ca3af;
+            --error: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #020617, #0b1220);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            background: var(--card-bg);
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        }
+
+        .logo {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid #1f2933;
+            background: #020617;
+            color: var(--text-light);
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 13px;
+            border-radius: 10px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .register-link {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .messages {
+            margin-top: 15px;
+        }
+
+        .messages p {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin: 0 0 8px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
-<h2>تسجيل الدخول</h2>
+<div class="auth-container">
 
-<form method="post">
-    {% csrf_token %}
+    <div class="logo">GameZone</div>
+    <div class="subtitle">تسجيل الدخول إلى حسابك</div>
 
-    <label>البريد الإلكتروني</label><br>
-    <input type="email" name="email" required><br><br>
+    <form method="post">
+        {% csrf_token %}
 
-    <label>كلمة المرور</label><br>
-    <input type="password" name="password" required><br><br>
+        <div class="form-group">
+            <label>البريد الإلكتروني</label>
+            <input type="email" name="email" placeholder="example@email.com" required>
+        </div>
 
-    <button type="submit">دخول</button>
-</form>
+        <div class="form-group">
+            <label>كلمة المرور</label>
+            <input type="password" name="password" placeholder="••••••••" required>
+        </div>
 
-<p>
-    ليس لديك حساب؟
-    <a href="{% url 'register' %}">إنشاء حساب</a>
-</p>
+        <button type="submit" class="submit-btn">تسجيل الدخول</button>
+    </form>
 
-{% for message in messages %}
-    <p style="color:red">{{ message }}</p>
-{% endfor %}
+    <div class="register-link">
+        ليس لديك حساب؟
+        <a href="{% url 'register' %}">إنشاء حساب</a>
+    </div>
+
+    <div class="messages">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+
+</div>
 
 </body>
 </html>

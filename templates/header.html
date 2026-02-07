@@ -28,7 +28,8 @@
 
   .actions {
     display: flex;
-    gap: 15px;
+    align-items: center;
+    gap: 12px;
   }
 
   .actions button {
@@ -42,6 +43,20 @@
 
   .actions button:hover {
     background: #5b21b6;
+  }
+
+  .welcome {
+    color: #e5e7eb;
+    font-size: 14px;
+    margin-right: 8px;
+  }
+
+  .logout-btn {
+    background: #dc2626;
+  }
+
+  .logout-btn:hover {
+    background: #b91c1c;
   }
 </style>
 
@@ -57,15 +72,31 @@
   </nav>
 
   <div class="actions">
-  <a href="{% url 'login' %}">
-    <button>تسجيل دخول</button>
-  </a>
 
-  <a href="{% url 'register' %}">
-    <button>إنشاء حساب</button>
-  </a>
+    {% if user.is_authenticated %}
+      <!-- ترحيب باسم المستخدم -->
+      <span class="welcome">
+        👋 مرحبًا، {{ user.username }}
+      </span>
 
-  <button>🛒 السلة</button>
-</div>
+      <!-- تسجيل خروج (POST للحماية) -->
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">تسجيل خروج</button>
+      </form>
 
+    {% else %}
+      <a href="{% url 'login' %}">
+        <button>تسجيل دخول</button>
+      </a>
+
+      <a href="{% url 'register' %}">
+        <button>إنشاء حساب</button>
+      </a>
+    {% endif %}
+
+    <!-- السلة تظهر دائمًا -->
+    <button>🛒 السلة</button>
+
+  </div>
 </header>
