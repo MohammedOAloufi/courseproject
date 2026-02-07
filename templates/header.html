@@ -57,7 +57,15 @@
   </nav>
 
   <div class="actions">
-    <button>🛒 السلة</button>
-    <button>👤 الحساب</button>
-  </div>
+  <a href="{% url 'login' %}">
+    <button>تسجيل دخول</button>
+  </a>
+
+  <a href="{% url 'register' %}">
+    <button>إنشاء حساب</button>
+  </a>
+
+  <button>🛒 السلة</button>
+</div>
+
 </header>

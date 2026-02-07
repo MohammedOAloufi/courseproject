@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تسجيل الدخول</title>
+</head>
+<body>
+
+<h2>تسجيل الدخول</h2>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>البريد الإلكتروني</label><br>
+    <input type="email" name="email" required><br><br>
+
+    <label>كلمة المرور</label><br>
+    <input type="password" name="password" required><br><br>
+
+    <button type="submit">دخول</button>
+</form>
+
+<p>
+    ليس لديك حساب؟
+    <a href="{% url 'register' %}">إنشاء حساب</a>
+</p>
+
+{% for message in messages %}
+    <p style="color:red">{{ message }}</p>
+{% endfor %}
+
+</body>
+</html>
