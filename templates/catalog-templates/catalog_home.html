@@ -1,0 +1,169 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>PC Gamer Store</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f9fafb;
+      color: #111827;
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #0f0f0f, #1f2933);
+      color: white;
+      padding: 80px 40px;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #d1d5db;
+    }
+
+    /* PRODUCTS */
+    .products {
+      padding: 60px 40px;
+    }
+
+    .products h2 {
+      margin-bottom: 25px;
+      color: #7c3aed;
+      text-align: center;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 25px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+    }
+
+    .card h3 {
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .price {
+      color: #7c3aed;
+      font-weight: bold;
+      font-size: 16px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .status {
+      color: #16a34a;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .add-btn {
+      width: 100%;
+      background: #7c3aed;
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s ease;
+    }
+
+    .add-btn:hover {
+      background: #5b21b6;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  {% include "header.html" %}
+
+  <!-- HERO -->
+  <section class="hero">
+    <h1>أفضل قطع PC وأجهزة الألعاب</h1>
+    <p>PlayStation • Xbox • Gaming PC • Accessories</p>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section class="products">
+    <h2>منتجات مميزة</h2>
+
+    <div class="product-grid">
+
+      <div class="card">
+        <h3>RTX 4090</h3>
+        <span class="price">6899 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
+      </div>
+
+      <div class="card">
+        <h3>RTX 4070</h3>
+        <span class="price">3299 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
+      </div>
+
+      <div class="card">
+        <h3>Ryzen 7 7800X3D</h3>
+        <span class="price">1899 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
+      </div>
+
+      <div class="card">
+        <h3>Intel Core i9-14900K</h3>
+        <span class="price">2399 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
+      </div>
+
+      <div class="card">
+        <h3>PlayStation 5</h3>
+        <span class="price">2299 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
+      </div>
+
+      <div class="card">
+        <h3>Xbox Series X</h3>
+        <span class="price">2199 ر.س</span>
+        <span class="status">● متوفر</span>
+        <button class="add-btn">إضافة للسلة</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  {% include "footer.html" %}
+
+</body>
+</html>
