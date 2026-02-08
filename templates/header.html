@@ -1,4 +1,5 @@
-<!-- header.html -->
+{% load static %}
+
 <style>
   header {
     background: #0f0f0f;
@@ -29,7 +30,7 @@
   .actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
   }
 
   .actions button {
@@ -58,6 +59,40 @@
   .logout-btn:hover {
     background: #b91c1c;
   }
+
+  /* ===== أيقونات القلب والسلة ===== */
+  .icon-btn {
+    background: transparent !important;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+  }
+
+  /* افتراضي: أبيض */
+  .icon-btn img {
+    width: 22px;
+    height: 22px;
+    filter: brightness(0) invert(1);
+    transition: filter 0.25s ease, transform 0.25s ease;
+  }
+
+  /* Hover القلب → أحمر */
+  .icon-btn.heart:hover img {
+    filter: brightness(0) saturate(100%)
+            invert(24%) sepia(96%) saturate(7461%)
+            hue-rotate(357deg) brightness(95%) contrast(120%);
+    transform: scale(1.15);
+  }
+
+  /* Hover السلة → بنفسجي */
+  .icon-btn.cart:hover img {
+    filter: brightness(0) saturate(100%)
+            invert(36%) sepia(74%) saturate(3566%)
+            hue-rotate(246deg) brightness(95%) contrast(115%);
+    transform: scale(1.15);
+  }
 </style>
 
 <header>
@@ -74,17 +109,14 @@
   <div class="actions">
 
     {% if user.is_authenticated %}
-      <!-- ترحيب باسم المستخدم -->
       <span class="welcome">
         👋 مرحبًا، {{ user.username }}
       </span>
 
-      <!-- تسجيل خروج (POST للحماية) -->
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
         <button type="submit" class="logout-btn">تسجيل خروج</button>
       </form>
-
     {% else %}
       <a href="{% url 'login' %}">
         <button>تسجيل دخول</button>
@@ -95,8 +127,15 @@
       </a>
     {% endif %}
 
-    <!-- السلة تظهر دائمًا -->
-    <button>🛒 السلة</button>
+    <!-- المفضلة -->
+    <button class="icon-btn heart" title="المفضلة">
+      <img src="{% static 'icons/heart.png' %}" alt="المفضلة">
+    </button>
+
+    <!-- السلة -->
+    <button class="icon-btn cart" title="السلة">
+      <img src="{% static 'icons/shopping.png' %}" alt="السلة">
+    </button>
 
   </div>
 </header>
