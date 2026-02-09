@@ -29,10 +29,11 @@ def register_view(request):
         )
 
         login(request, user)
-        return redirect("catalog:catalog_home")  # غيرها حسب صفحتك الرئيسية
+
+        # ✅ التوجيه الصحيح للصفحة الرئيسية
+        return redirect("catalog:home")
 
     return render(request, "account-templates/register.html")
-
 
 
 def login_view(request):
@@ -47,9 +48,10 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect("catalog:catalog_home")
+
+            # ✅ التوجيه الصحيح للصفحة الرئيسية
+            return redirect("catalog:home")
         else:
             messages.error(request, "بيانات الدخول غير صحيحة")
 
     return render(request, "account-templates/login.html")
-

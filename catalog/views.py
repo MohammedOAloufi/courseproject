@@ -1,7 +1,13 @@
 from django.shortcuts import render
+from .models import Product
+
 
 def catalog_home(request):
+    products = Product.objects.filter(is_active=True).select_related("stock")
     return render(
         request,
-        "catalog-templates/catalog_home.html"
+        "home.html",
+        {
+            "products": products
+        }
     )

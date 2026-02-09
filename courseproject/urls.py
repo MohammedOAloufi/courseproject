@@ -1,17 +1,20 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
+from django.conf import settings      # ✅ هذا السطر كان ناقص
 from django.conf.urls.static import static
+
+from catalog.views import catalog_home
 
 urlpatterns = [
     # لوحة التحكم
     path("admin/", admin.site.urls),
 
-    # الواجهة الرئيسية للعملاء (Home)
-    path("", include("catalog.urls")),
+    # 🏠 الصفحة الرئيسية الأساسية
+    path("", catalog_home, name="home"),
 
-    # تطبيقات أخرى
+    # التطبيقات
     path("accounts/", include("accounts.urls")),
+    path("catalog/", include("catalog.urls")),
     path("orders/", include("orders.urls")),
 ]
 

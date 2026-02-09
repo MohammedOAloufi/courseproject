@@ -23,11 +23,28 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "category", "price", "final_price", "is_active")
+    list_display = (
+        "name",
+        "category",
+        "price",
+        "final_price",
+        "stock_quantity",
+        "is_active",
+    )
     list_filter = ("is_active", "category")
     search_fields = ("name", "description")
     prepopulated_fields = {"slug": ("name",)}
     inlines = [ProductImageInline, StockInline]
+
+    @admin.display(description="الكمية المتوفرة")
+    def stock_quantity(self, obj):
+        """
+        عرض كمية المنتج في الأدمن
+        آمن في حال ما كان فيه سجل Stock
+        """
+        if hasattr(obj, "stock"):
+            return obj.stock.quantity
+        return 0
 
 
 @admin.register(ProductImage)
