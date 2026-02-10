@@ -1,4 +1,5 @@
 from django.db import models
+from cloudinary.models import CloudinaryField
 
 
 class Category(models.Model):
@@ -89,10 +90,13 @@ class ProductImage(models.Model):
         related_name="images",
         verbose_name="المنتج"
     )
-    image = models.ImageField(
-        upload_to="products/",
-        verbose_name="صورة المنتج"
+
+    # ✅ Cloudinary بدل ImageField
+    image = CloudinaryField(
+        "صورة المنتج",
+        folder="products"
     )
+
     is_main = models.BooleanField(
         default=False,
         verbose_name="صورة رئيسية"

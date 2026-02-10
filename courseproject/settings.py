@@ -1,4 +1,11 @@
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# =========================
+# LOAD ENV
+# =========================
+load_dotenv()
 
 # =========================
 # BASE DIR
@@ -25,6 +32,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    # Cloudinary
+    "cloudinary",
+    "cloudinary_storage",
 
     # Local apps
     "accounts.apps.AccountsConfig",
@@ -57,7 +68,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            BASE_DIR / "templates",   # templates العام
+            BASE_DIR / "templates",
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -125,7 +136,7 @@ LOCALE_PATHS = [
 
 
 # =========================
-# STATIC & MEDIA FILES
+# STATIC FILES
 # =========================
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [
@@ -133,12 +144,20 @@ STATICFILES_DIRS = [
 ]
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+
+# =========================
+# CLOUDINARY CONFIG
+# =========================
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
+}
+
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 
 # =========================
 # DEFAULT PK
 # =========================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
