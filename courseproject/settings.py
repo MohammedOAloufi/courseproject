@@ -7,9 +7,6 @@ from dotenv import load_dotenv
 # =========================
 load_dotenv()
 
-# =========================
-# BASE DIR
-# =========================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -17,9 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # =========================
 SECRET_KEY = os.getenv("SECRET_KEY")
-
 DEBUG = os.getenv("DEBUG", "False") == "True"
-
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 CSRF_TRUSTED_ORIGINS = os.getenv(
@@ -31,7 +26,6 @@ CSRF_TRUSTED_ORIGINS = os.getenv(
 # APPLICATIONS
 # =========================
 INSTALLED_APPS = [
-    # Django core
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -39,11 +33,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Cloudinary
     "cloudinary",
     "cloudinary_storage",
 
-    # Local apps
     "accounts.apps.AccountsConfig",
     "catalog.apps.CatalogConfig",
     "orders.apps.OrdersConfig",
@@ -55,6 +47,7 @@ INSTALLED_APPS = [
 # =========================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -73,9 +66,7 @@ ROOT_URLCONF = "courseproject.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [
-            BASE_DIR / "templates",
-        ],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -115,56 +106,20 @@ else:
 
 
 # =========================
-# AUTH / PASSWORDS
-# =========================
-AUTH_USER_MODEL = "accounts.User"
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
-
-
-# =========================
-# INTERNATIONALIZATION
-# =========================
-LANGUAGE_CODE = "ar"
-TIME_ZONE = "Asia/Riyadh"
-
-USE_I18N = True
-USE_TZ = True
-
-LANGUAGES = [
-    ("ar", "العربية"),
-]
-
-LOCALE_PATHS = [
-    BASE_DIR / "locale",
-]
-
-
-# =========================
-# STATIC FILES
+# STATIC FILES (WhiteNoise)
 # =========================
 STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
-STATIC_ROOT = BASE_DIR / "staticfiles"
+
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # =========================
-# MEDIA / CLOUDINARY
+# MEDIA (Cloudinary)
 # =========================
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
@@ -176,8 +131,30 @@ DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
 
 # =========================
-# DEFAULT PK
+# AUTH / PASSWORDS
 # =========================
+AUTH_USER_MODEL = "accounts.User"
+
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
+
+
+# =========================
+# INTERNATIONALIZATION
+# =========================
+LANGUAGE_CODE = "ar"
+TIME_ZONE = "Asia/Riyadh"
+USE_I18N = True
+USE_TZ = True
+
+LANGUAGES = [("ar", "العربية")]
+LOCALE_PATHS = [BASE_DIR / "locale"]
+
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
@@ -188,5 +165,4 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
