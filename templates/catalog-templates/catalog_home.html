@@ -1,5 +1,11 @@
 {% load static %}
 
+<style>
+  .status-out { color: #dc2626; }
+  .add-btn-disabled { background: #9ca3af; cursor: not-allowed; }
+  .empty-state { text-align: center; color: #6b7280; }
+</style>
+
 <section class="products">
   <h2>منتجات مميزة</h2>
 
@@ -18,17 +24,17 @@
           <span class="status">● متوفر</span>
           <button class="add-btn">إضافة للسلة</button>
         {% else %}
-          <span class="status" style="color:#dc2626;">● غير متوفر</span>
-          <button class="add-btn"
+          <span class="status status-out">● غير متوفر</span>
+          <button class="add-btn add-btn-disabled"
                   disabled
-                  style="background:#9ca3af;cursor:not-allowed;">
+                  type="button">
             غير متوفر
           </button>
         {% endif %}
 
       </div>
     {% empty %}
-      <p style="text-align:center;color:#6b7280;">
+      <p class="empty-state">
         لا توجد منتجات حالياً
       </p>
     {% endfor %}

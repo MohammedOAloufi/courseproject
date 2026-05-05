@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Q, UniqueConstraint
 
 
 class User(AbstractUser):
@@ -17,6 +18,11 @@ class User(AbstractUser):
     class Meta:
         verbose_name = "مستخدم"
         verbose_name_plural = "المستخدمون"
+
+    def save(self, *args, **kwargs):
+        if self.email:
+            self.email = self.email.strip().lower()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.email
@@ -97,6 +103,13 @@ class Address(models.Model):
     class Meta:
         verbose_name = "عنوان"
         verbose_name_plural = "العناوين"
+        constraints = [
+            UniqueConstraint(
+                fields=["user"],
+                condition=Q(is_default=True),
+                name="uniq_default_address_per_user",
+            ),
+        ]
 
     def __str__(self):
         return f"{self.city} - {self.user.email}"

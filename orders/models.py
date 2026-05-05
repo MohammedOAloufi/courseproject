@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import UniqueConstraint
 from accounts.models import User
 from catalog.models import Product
 
@@ -48,6 +49,9 @@ class CartItem(models.Model):
     class Meta:
         verbose_name = "عنصر سلة"
         verbose_name_plural = "عناصر السلة"
+        constraints = [
+            UniqueConstraint(fields=["cart", "product"], name="uniq_cart_product"),
+        ]
 
     def __str__(self):
         return f"{self.product.name} × {self.quantity}"
@@ -85,6 +89,10 @@ class Order(models.Model):
     class Meta:
         verbose_name = "طلب"
         verbose_name_plural = "الطلبات"
+        indexes = [
+            models.Index(fields=["user", "-created_at"], name="order_user_created_idx"),
+            models.Index(fields=["status"], name="order_status_idx"),
+        ]
 
     def __str__(self):
         return f"طلب رقم #{self.id}"
@@ -149,6 +157,9 @@ class Payment(models.Model):
     class Meta:
         verbose_name = "عملية دفع"
         verbose_name_plural = "عمليات الدفع"
+        indexes = [
+            models.Index(fields=["status"], name="payment_status_idx"),
+        ]
 
     def __str__(self):
         return f"دفع الطلب #{self.order.id}"

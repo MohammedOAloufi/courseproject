@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q, UniqueConstraint
 from cloudinary.models import CloudinaryField
 
 
@@ -74,6 +75,10 @@ class Product(models.Model):
     class Meta:
         verbose_name = "منتج"
         verbose_name_plural = "المنتجات"
+        indexes = [
+            models.Index(fields=["is_active", "-created_at"], name="prod_active_created_idx"),
+            models.Index(fields=["category", "is_active"], name="prod_cat_active_idx"),
+        ]
 
     def __str__(self):
         return self.name
@@ -105,6 +110,13 @@ class ProductImage(models.Model):
     class Meta:
         verbose_name = "صورة منتج"
         verbose_name_plural = "صور المنتجات"
+        constraints = [
+            UniqueConstraint(
+                fields=["product"],
+                condition=Q(is_main=True),
+                name="uniq_main_image_per_product",
+            ),
+        ]
 
     def __str__(self):
         return f"صورة - {self.product.name}"

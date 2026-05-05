@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>السلة | GameZone</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f9fafb; color: #111827; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 30px 20px; }
+    h1 { color: #7c3aed; margin-bottom: 20px; }
+    .messages p { padding: 10px 14px; border-radius: 8px; margin: 6px 0; font-size: 14px; }
+    .messages .success { background: #dcfce7; color: #166534; }
+    .messages .error { background: #fee2e2; color: #991b1b; }
+    .messages .warning { background: #fef3c7; color: #92400e; }
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+    th, td { padding: 14px; text-align: center; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+    th { background: #f3f4f6; color: #374151; }
+    .product-cell { display: flex; align-items: center; gap: 12px; text-align: right; }
+    .product-cell img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; background: #f3f4f6; }
+    input[type="number"] { width: 70px; padding: 6px; border: 1px solid #d1d5db; border-radius: 6px; text-align: center; }
+    .btn { background: #7c3aed; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+    .btn:hover { background: #5b21b6; }
+    .btn-danger { background: #dc2626; }
+    .btn-danger:hover { background: #b91c1c; }
+    .summary { margin-top: 24px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; }
+    .total { font-size: 20px; font-weight: bold; color: #111827; }
+    .total span { color: #7c3aed; }
+    .empty { text-align: center; padding: 60px 20px; color: #6b7280; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+    .empty a { color: #7c3aed; font-weight: bold; text-decoration: none; }
+    .img-placeholder { width: 60px; height: 60px; background: #f3f4f6; border-radius: 8px; }
+    .qty-form { display: inline-flex; gap: 6px; }
+    .inline-form { display: inline; }
+    @media (max-width: 640px) {
+      table, thead, tbody, th, td, tr { display: block; }
+      thead { display: none; }
+      tr { background: white; margin-bottom: 12px; padding: 10px; border-radius: 10px; }
+      td { border: none; text-align: right; padding: 8px 4px; }
+      td::before { content: attr(data-label); font-weight: bold; color: #7c3aed; display: inline-block; margin-left: 8px; }
+    }
+  </style>
+</head>
+<body>
+  {% include "header.html" %}
+
+  <div class="container">
+    <h1>🛒 سلة المشتريات</h1>
+
+    <div class="messages">
+      {% for message in messages %}
+        <p class="{{ message.tags }}">{{ message }}</p>
+      {% endfor %}
+    </div>
+
+    {% if items %}
+      <table>
+        <thead>
+          <tr>
+            <th>المنتج</th>
+            <th>السعر</th>
+            <th>الكمية</th>
+            <th>الإجمالي</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+            <tr>
+              <td data-label="المنتج">
+                <div class="product-cell">
+                  {% with image=item.product.images.first %}
+                    {% if image %}<img src="{{ image.image.url }}" alt="{{ item.product.name }}">{% else %}<div class="img-placeholder" aria-hidden="true"></div>{% endif %}
+                  {% endwith %}
+                  <span>{{ item.product.name }}</span>
+                </div>
+              </td>
+              <td data-label="السعر">{{ item.price_at_time }} ر.س</td>
+              <td data-label="الكمية">
+                <form method="post" action="{% url 'orders:update_item' item.id %}" class="qty-form">
+                  {% csrf_token %}
+                  <label class="sr-only" for="qty-{{ item.id }}">الكمية</label>
+                  <input id="qty-{{ item.id }}" type="number" name="quantity" value="{{ item.quantity }}" min="1" aria-label="الكمية" title="الكمية">
+                  <button class="btn" type="submit">تحديث</button>
+                </form>
+              </td>
+              <td data-label="الإجمالي">{{ item.price_at_time|floatformat:2 }} × {{ item.quantity }}</td>
+              <td data-label="إجراءات">
+                <form method="post" action="{% url 'orders:remove_item' item.id %}" class="inline-form">
+                  {% csrf_token %}
+                  <button class="btn btn-danger" type="submit">حذف</button>
+                </form>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="summary">
+        <div class="total">المجموع: <span>{{ total|floatformat:2 }} ر.س</span></div>
+        <a href="{% url 'orders:checkout' %}"><button class="btn">إتمام الطلب</button></a>
+      </div>
+    {% else %}
+      <div class="empty">
+        <p>السلة فارغة حالياً</p>
+        <a href="{% url 'home' %}">تصفّح المنتجات →</a>
+      </div>
+    {% endif %}
+  </div>
+
+  {% include "footer.html" %}
+</body>
+</html>

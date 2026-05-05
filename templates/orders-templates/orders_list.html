@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>طلباتي | GameZone</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f9fafb; }
+    .container { max-width: 900px; margin: 0 auto; padding: 30px 20px; }
+    h1 { color: #7c3aed; }
+    .order-card { background: white; padding: 18px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+    .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+    .badge.paid { background: #dcfce7; color: #166534; }
+    .badge.pending { background: #fef3c7; color: #92400e; }
+    .badge.cancelled { background: #fee2e2; color: #991b1b; }
+    a.detail-btn { background: #7c3aed; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; }
+    a.detail-btn:hover { background: #5b21b6; }
+    .empty { text-align: center; padding: 60px; color: #6b7280; }
+    .order-meta { color: #6b7280; font-size: 13px; }
+  </style>
+</head>
+<body>
+  {% include "header.html" %}
+
+  <div class="container">
+    <h1>📦 طلباتي</h1>
+
+    {% for order in orders %}
+      <div class="order-card">
+        <div>
+          <strong>طلب #{{ order.id }}</strong>
+          <div class="order-meta">{{ order.created_at|date:"Y-m-d H:i" }}</div>
+        </div>
+        <div>{{ order.items.count }} عنصر</div>
+        <div><strong>{{ order.total_price }} ر.س</strong></div>
+        <span class="badge {{ order.status }}">{{ order.get_status_display }}</span>
+        <a class="detail-btn" href="{% url 'orders:order_detail' order.id %}">عرض التفاصيل</a>
+      </div>
+    {% empty %}
+      <div class="empty">لا توجد طلبات بعد</div>
+    {% endfor %}
+  </div>
+
+  {% include "footer.html" %}
+</body>
+</html>

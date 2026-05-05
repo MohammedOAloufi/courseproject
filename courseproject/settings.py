@@ -15,11 +15,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # =========================
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("ALLOWED_HOSTS", "").split(",")
+    if host.strip()
+]
 
 CSRF_TRUSTED_ORIGINS = os.getenv(
     "CSRF_TRUSTED_ORIGINS", ""
 ).split(",")
+
+if DEBUG:
+    for dev_host in ["127.0.0.1", "localhost", "0.0.0.0", "10.0.2.2"]:
+        if dev_host not in ALLOWED_HOSTS:
+            ALLOWED_HOSTS.append(dev_host)
 
 
 # =========================
@@ -74,6 +83,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "orders.context_processors.cart_count",
             ],
         },
     },

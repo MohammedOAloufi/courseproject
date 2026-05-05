@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>تسجيل الدخول | GameZone</title>
 
     <style>
@@ -28,6 +29,7 @@
             align-items: center;
             justify-content: center;
             color: var(--text-light);
+            padding: 20px;
         }
 
         .auth-container {
@@ -129,6 +131,17 @@
             font-size: 13px;
             margin: 0 0 8px;
             text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 24px 18px;
+                border-radius: 12px;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
         }
     </style>
 </head>

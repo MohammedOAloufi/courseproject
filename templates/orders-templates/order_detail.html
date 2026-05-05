@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>طلب #{{ order.id }} | GameZone</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f9fafb; }
+    .container { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
+    h1 { color: #7c3aed; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); margin-bottom: 16px; }
+    .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+    .row:last-child { border-bottom: none; }
+    .badge { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; display: inline-block; }
+    .badge.paid { background: #dcfce7; color: #166534; }
+    .badge.pending { background: #fef3c7; color: #92400e; }
+    .badge.cancelled { background: #fee2e2; color: #991b1b; }
+    .total { font-size: 20px; font-weight: bold; color: #7c3aed; text-align: left; margin-top: 12px; }
+    a { color: #7c3aed; text-decoration: none; }
+  </style>
+</head>
+<body>
+  {% include "header.html" %}
+
+  <div class="container">
+    <p><a href="{% url 'orders:order_list' %}">← العودة إلى الطلبات</a></p>
+    <h1>طلب #{{ order.id }}</h1>
+
+    <div class="card">
+      <div class="row"><span>الحالة</span><span class="badge {{ order.status }}">{{ order.get_status_display }}</span></div>
+      <div class="row"><span>التاريخ</span><span>{{ order.created_at|date:"Y-m-d H:i" }}</span></div>
+      {% if order.payment %}
+        <div class="row"><span>رقم العملية</span><span>{{ order.payment.transaction_id }}</span></div>
+        <div class="row"><span>حالة الدفع</span><span>{{ order.payment.get_status_display }}</span></div>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <h3>المنتجات</h3>
+      {% for item in order.items.all %}
+        <div class="row">
+          <span>{{ item.product_name }} × {{ item.quantity }}</span>
+          <span>{{ item.price }} ر.س</span>
+        </div>
+      {% endfor %}
+      <div class="total">الإجمالي: {{ order.total_price }} ر.س</div>
+    </div>
+  </div>
+
+  {% include "footer.html" %}
+</body>
+</html>

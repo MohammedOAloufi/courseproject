@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.contrib import messages
 from .models import User
 
@@ -9,10 +11,14 @@ def register_view(request):
     إنشاء حساب جديد
     """
     if request.method == "POST":
-        email = request.POST.get("email")
-        username = request.POST.get("username")
-        password1 = request.POST.get("password1")
-        password2 = request.POST.get("password2")
+        email = (request.POST.get("email") or "").strip().lower()
+        username = (request.POST.get("username") or "").strip()
+        password1 = request.POST.get("password1") or ""
+        password2 = request.POST.get("password2") or ""
+
+        if not email or not username or not password1:
+            messages.error(request, "جميع الحقول مطلوبة")
+            return redirect("register")
 
         if password1 != password2:
             messages.error(request, "كلمتا المرور غير متطابقتين")
@@ -22,16 +28,32 @@ def register_view(request):
             messages.error(request, "البريد الإلكتروني مستخدم مسبقًا")
             return redirect("register")
 
-        user = User.objects.create_user(
-            email=email,
-            username=username,
-            password=password1
-        )
+        if User.objects.filter(username__iexact=username).exists():
+            messages.error(request, "اسم المستخدم مستخدم مسبقًا")
+            return redirect("register")
 
-        login(request, user)
+        try:
+            validate_password(password1)
+        except ValidationError as e:
+            for err in e.messages:
+                messages.error(request, err)
+            return redirect("register")
 
-        # ✅ التوجيه الصحيح للصفحة الرئيسية
-        return redirect("catalog:home")
+        try:
+            user = User.objects.create_user(
+                email=email,
+                username=username,
+                password=password1,
+            )
+        except Exception:
+            messages.error(request, "حدث خطأ أثناء إنشاء الحساب")
+            return redirect("register")
+
+        # ضمان نجاح المصادقة باستخدام USERNAME_FIELD = email
+        user = authenticate(request, username=email, password=password1)
+        if user is not None:
+            login(request, user)
+        return redirect("home")
 
     return render(request, "account-templates/register.html")
 
@@ -41,17 +63,14 @@ def login_view(request):
     تسجيل الدخول
     """
     if request.method == "POST":
-        email = request.POST.get("email")
-        password = request.POST.get("password")
+        email = (request.POST.get("email") or "").strip().lower()
+        password = request.POST.get("password") or ""
 
-        user = authenticate(request, email=email, password=password)
+        user = authenticate(request, username=email, password=password)
 
         if user is not None:
             login(request, user)
-
-            # ✅ التوجيه الصحيح للصفحة الرئيسية
-            return redirect("catalog:home")
-        else:
-            messages.error(request, "بيانات الدخول غير صحيحة")
+            return redirect("home")
+        messages.error(request, "بيانات الدخول غير صحيحة")
 
     return render(request, "account-templates/login.html")

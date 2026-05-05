@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>إتمام الطلب | GameZone</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f9fafb; color: #111827; }
+    .container { max-width: 800px; margin: 0 auto; padding: 30px 20px; }
+    h1 { color: #7c3aed; }
+    .card { background: white; padding: 22px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.06); margin-bottom: 18px; }
+    .item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f3f4f6; }
+    .item:last-child { border-bottom: none; }
+    .total { font-size: 22px; font-weight: bold; color: #7c3aed; text-align: left; margin-top: 12px; }
+    .btn { background: #7c3aed; color: white; border: none; padding: 14px 22px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; }
+    .btn:hover { background: #5b21b6; }
+    .note { color: #6b7280; font-size: 13px; margin-top: 8px; text-align: center; }
+  </style>
+</head>
+<body>
+  {% include "header.html" %}
+
+  <div class="container">
+    <h1>إتمام الطلب</h1>
+
+    <div class="card">
+      <h3>ملخص المنتجات</h3>
+      {% for item in items %}
+        <div class="item">
+          <span>{{ item.product.name }} × {{ item.quantity }}</span>
+          <span>{{ item.price_at_time }} ر.س</span>
+        </div>
+      {% endfor %}
+      <div class="total">الإجمالي: {{ total|floatformat:2 }} ر.س</div>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn">تأكيد الطلب والدفع</button>
+      <p class="note">سيتم إنشاء الطلب وتسجيل عملية الدفع فوراً (بيئة تجريبية)</p>
+    </form>
+  </div>
+
+  {% include "footer.html" %}
+</body>
+</html>
