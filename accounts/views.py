@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.contrib import messages
+from django.db.models import Q
 from .models import User
 
 
@@ -24,12 +25,17 @@ def register_view(request):
             messages.error(request, "كلمتا المرور غير متطابقتين")
             return redirect("register")
 
-        if User.objects.filter(email=email).exists():
-            messages.error(request, "البريد الإلكتروني مستخدم مسبقًا")
-            return redirect("register")
-
-        if User.objects.filter(username__iexact=username).exists():
-            messages.error(request, "اسم المستخدم مستخدم مسبقًا")
+        # استعلام واحد للتحقق من تكرار الإيميل أو اسم المستخدم
+        existing = (
+            User.objects.filter(Q(email=email) | Q(username__iexact=username))
+            .values("email", "username")
+            .first()
+        )
+        if existing:
+            if existing["email"] == email:
+                messages.error(request, "البريد الإلكتروني مستخدم مسبقًا")
+            else:
+                messages.error(request, "اسم المستخدم مستخدم مسبقًا")
             return redirect("register")
 
         try:

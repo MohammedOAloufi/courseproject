@@ -15,6 +15,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # =========================
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = os.getenv("DEBUG", "False") == "True"
+
+if not SECRET_KEY:
+    raise RuntimeError(
+        "SECRET_KEY is not set. Define it in environment variables / .env."
+    )
+
+if not DEBUG and SECRET_KEY.startswith("django-insecure-"):
+    raise RuntimeError(
+        "Refusing to start in production with a development SECRET_KEY. "
+        "Generate a new one with: python -c \"import secrets; print(secrets.token_urlsafe(64))\""
+    )
+
 ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv("ALLOWED_HOSTS", "").split(",")
@@ -48,6 +60,8 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "catalog.apps.CatalogConfig",
     "orders.apps.OrdersConfig",
+
+    "axes",
 ]
 
 
@@ -64,7 +78,22 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "axes.middleware.AxesMiddleware",
 ]
+
+
+# =========================
+# AUTH BACKENDS (django-axes)
+# =========================
+AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1  # hours
+AXES_LOCKOUT_PARAMETERS = ["username", "ip_address"]
+AXES_RESET_ON_SUCCESS = True
 
 
 # =========================
@@ -171,8 +200,20 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # =========================
 # PRODUCTION SECURITY
 # =========================
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"
+CSRF_COOKIE_SAMESITE = "Lax"
+SECURE_REFERRER_POLICY = "same-origin"
+X_FRAME_OPTIONS = "DENY"
+
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    SECURE_HSTS_SECONDS = 60 * 60 * 24 * 365  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

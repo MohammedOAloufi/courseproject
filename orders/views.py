@@ -4,10 +4,11 @@ from uuid import uuid4
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.db.models import F
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
-from catalog.models import Product
+from catalog.models import Product, Stock
 
 from .models import Cart, CartItem, Order, OrderItem, Payment
 
@@ -17,9 +18,10 @@ def _get_or_create_cart(user):
     return cart
 
 
-def _cart_total(cart):
+def _cart_total(items):
+    """احسب إجمالي السلة من قائمة العناصر المحمّلة مسبقاً."""
     return sum(
-        (item.price_at_time * item.quantity for item in cart.items.all()),
+        (item.price_at_time * item.quantity for item in items),
         Decimal("0.00"),
     )
 
@@ -28,7 +30,7 @@ def _cart_total(cart):
 def cart_view(request):
     cart = _get_or_create_cart(request.user)
     items = cart.items.select_related("product").prefetch_related("product__images")
-    total = _cart_total(cart)
+    total = _cart_total(items)
     return render(
         request,
         "orders-templates/cart.html",
@@ -39,7 +41,9 @@ def cart_view(request):
 @login_required
 @require_POST
 def add_to_cart(request, product_id):
-    product = get_object_or_404(Product, id=product_id, is_active=True)
+    product = get_object_or_404(
+        Product.objects.select_related("stock"), id=product_id, is_active=True
+    )
 
     stock_qty = getattr(getattr(product, "stock", None), "quantity", 0)
     if stock_qty <= 0:
@@ -79,7 +83,9 @@ def add_to_cart(request, product_id):
 @require_POST
 def update_cart_item(request, item_id):
     cart = _get_or_create_cart(request.user)
-    item = get_object_or_404(CartItem, id=item_id, cart=cart)
+    item = get_object_or_404(
+        CartItem.objects.select_related("product__stock"), id=item_id, cart=cart
+    )
 
     try:
         quantity = int(request.POST.get("quantity", 1))
@@ -115,18 +121,28 @@ def remove_cart_item(request, item_id):
 @login_required
 def checkout_view(request):
     cart = _get_or_create_cart(request.user)
-    items = list(cart.items.select_related("product").all())
+    # جلب العناصر مع المنتج والمخزون دفعة واحدة
+    items = list(cart.items.select_related("product__stock").all())
 
     if not items:
         messages.error(request, "السلة فارغة")
         return redirect("orders:cart")
 
-    total = _cart_total(cart)
+    total = _cart_total(items)
 
     if request.method == "POST":
         with transaction.atomic():
+            product_ids = [ci.product_id for ci in items]
+            # قفل صفوف المخزون لضمان التناسق عند الطلبات المتزامنة
+            locked_stocks = {
+                s.product_id: s
+                for s in Stock.objects.select_for_update().filter(
+                    product_id__in=product_ids
+                )
+            }
+
             for ci in items:
-                stock = getattr(ci.product, "stock", None)
+                stock = locked_stocks.get(ci.product_id)
                 stock_qty = stock.quantity if stock else 0
                 if ci.quantity > stock_qty:
                     messages.error(
@@ -141,16 +157,22 @@ def checkout_view(request):
                 total_price=total,
             )
 
-            for ci in items:
-                OrderItem.objects.create(
+            # إدراج عناصر الطلب دفعة واحدة بدل insert لكل عنصر
+            OrderItem.objects.bulk_create([
+                OrderItem(
                     order=order,
                     product_name=ci.product.name,
                     quantity=ci.quantity,
                     price=ci.price_at_time,
                 )
-                stock = ci.product.stock
-                stock.quantity = max(0, stock.quantity - ci.quantity)
-                stock.save()
+                for ci in items
+            ])
+
+            # تحديث المخزون باستخدام F() لتجنب race conditions
+            for ci in items:
+                Stock.objects.filter(product_id=ci.product_id).update(
+                    quantity=F("quantity") - ci.quantity
+                )
 
             Payment.objects.create(
                 order=order,
